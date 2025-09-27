@@ -18,6 +18,7 @@ resource "aws_instance" "tf_instance" {
 
     tags = {
         Name  = "Dev-Instance"
-        Owner = "Sachin"
+        Owner = "Sachin" 
     }
+
 }
