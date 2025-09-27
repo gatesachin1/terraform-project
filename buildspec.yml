@@ -2,9 +2,6 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      # If using Amazon Linux 2 standard image, install Terraform manually
-      docker: 18
     commands:
       - echo Installing Terraform...
       - curl -O https://releases.hashicorp.com/terraform/1.8.5/terraform_1.8.5_linux_amd64.zip
@@ -14,8 +11,6 @@ phases:
 
   pre_build:
     commands:
-      - echo Logging in to AWS...
-      - aws sts get-caller-identity
       - echo Initializing Terraform...
       - terraform init
 
