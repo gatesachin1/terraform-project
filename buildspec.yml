@@ -11,7 +11,7 @@ phases:
 
   pre_build:
     commands:
-      - echo Initializing Terraform...   
+      - echo Initializing Terraform...
       - terraform init
 
   build:
@@ -24,7 +24,17 @@ phases:
   post_build:
     commands:
       - echo Applying Terraform plan...
-      - terraform apply -auto-approve tfplan
+      - |
+        if terraform apply -auto-approve tfplan; then
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"✅ Terraform apply succeeded in CodeBuild!"}' \
+            $SLACK_WEBHOOK_URL
+        else
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"❌ Terraform apply failed in CodeBuild!"}' \
+            $SLACK_WEBHOOK_URL
+          exit 1
+        fi
 
 artifacts:
   files:
