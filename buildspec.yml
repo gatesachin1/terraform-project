@@ -1,41 +1,33 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_DEFAULT_REGION : "us-east-1"
+    AWS_BUCKET_NAME    : "deployment-s3-bucket-terraform-based"
+    ENV                : "Development"
+
 phases:
   install:
-    commands:
+    commands: 
       - echo Installing Terraform...
       - curl -O https://releases.hashicorp.com/terraform/1.8.5/terraform_1.8.5_linux_amd64.zip
       - unzip terraform_1.8.5_linux_amd64.zip
       - mv terraform /usr/local/bin/
       - terraform -version
 
-  pre_build:
-    commands:
+  pre_build: 
+    commands: 
       - echo Initializing Terraform...
       - terraform init
-
-  build:
+    
+  build: 
     commands:
-      - echo Validating Terraform code...
+      - echo Validating Terraform Code...
       - terraform validate
-      - echo Planning Terraform deployment...
+      - echo Planning Terraform Deployment...
       - terraform plan -out=tfplan
-
-  post_build:
-    commands:
-      - echo Applying Terraform plan...
-      - |
-        if terraform apply -auto-approve tfplan; then
-          curl -X POST -H 'Content-type: application/json' \
-            --data '{"text":"✅ Terraform apply succeeded in CodeBuild!"}' \
-            $SLACK_WEBHOOK_URL
-        else
-          curl -X POST -H 'Content-type: application/json' \
-            --data '{"text":"❌ Terraform apply failed in CodeBuild!"}' \
-            $SLACK_WEBHOOK_URL
-          exit 1
-        fi
-
+  
 artifacts:
-  files:
-    - '**/*'
+  files: 
+    - tfplan
+  name: terraform-plan-artifact
